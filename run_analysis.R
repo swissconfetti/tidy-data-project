@@ -41,13 +41,13 @@ activities <- read.table("./UCI HAR Dataset/activity_labels.txt",stringsAsFactor
 
 # set up training set, then delete read-in tables
 train <- tbl_df(train_X)
-train$feature <- train_y$V1
+train$activity <- train_y$V1
 train$subject <- train_subject$V1
 remove(train_X,train_y,train_subject)
 
 # set up test set, then delete read-in tables
 test <- tbl_df(test_X)
-test$feature <- test_y$V1
+test$activity <- test_y$V1
 test$subject <- test_subject$V1
 remove(test_X,test_y,test_subject)
 
@@ -65,14 +65,14 @@ varIndices <- sort(union(
      grep("mean\\(",featureNames$V2),
      grep("std",featureNames$V2)
      ))
-meanStdSet <- select(testAndTrain,varIndices,subject,feature)
+meanStdSet <- select(testAndTrain,varIndices,subject,activity)
 remove(testAndTrain)
 
 # name the activites
 # (note that this works because the 
 # activity names were helpfully given 
 # in sequential order)
-meanStdSet$feature <- factor(meanStdSet$feature,
+meanStdSet$activity <- factor(meanStdSet$activity,
                              labels = activities$V2)
 
 # add descriptive variable names
@@ -87,7 +87,7 @@ names(meanStdSet)[1:length(varIndices)] <- featureNames$V2[varIndices]
 # (this possibly-still experimental method came from 
 # http://stackoverflow.com/questions/22644804/how-can-i-use-dplyr-to-apply-a-function-to-all-non-group-by-columns )
 summary <- meanStdSet %>% 
-     group_by(subject,feature) %>% 
+     group_by(subject,activity) %>% 
      summarise_each(funs(mean))
 
 # write summary to a file using write.table
